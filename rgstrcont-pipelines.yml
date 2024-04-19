@@ -1,0 +1,41 @@
+stages:
+- stage: ResourceGroupDeployment
+  displayName: Resource Group Deployment
+  pool:
+    vmImage: 'ubuntu-latest'
+  jobs:
+  - job: CreateResourceGroup
+    displayName: Create Resource Group
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Devopspipeline'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          # Azure CLI command to create a resource group
+          az group create --name testRG43 --location "central india"  # Replace with your desired resource group name and location
+
+- stage: StorageAccountDeployment
+  displayName: Storage Account Deployment
+  dependsOn: ResourceGroupDeployment
+  pool:
+    vmImage: 'ubuntu-latest'
+  jobs:
+  - job: CreateStorageAccount
+    displayName: Create Storage Account
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Devopspipeline'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          # Azure CLI command to create a storage account
+          az storage account create --name storage9768 --resource-group testRG43 --location "central india" --sku Standard_LRS
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'Devopspipeline'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: 'az storage container create --name mycontainer45687 --account-name storage9768'
